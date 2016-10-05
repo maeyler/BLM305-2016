@@ -1,0 +1,9 @@
+class java.io.File
+f = new File("work", "DiningPhilosophers.jar"); //--> work\expr.jar 
+i = f.toURI(); 
+u = i.toURL();
+
+class mae.sss.Chooser
+Chooser.loadClass(u, "DiningPhilosophers");
+d = new DiningPhilosophers(4); 
+d.start();
