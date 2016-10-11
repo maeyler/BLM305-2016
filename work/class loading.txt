@@ -1,0 +1,24 @@
+//start with URL
+class java.net.URL
+//start with URL
+//and our Chooser
+class mae.sss.Chooser
+
+//Case 2a. u is a remote directory with a known address
+u1 = new URL("http://www.cs.rit.edu/~ats/java-2001-3/jdk1.4/demo/applets/ArcTest/");
+//Case 2a. u is a remote directory with a known address
+//Load a class in that directory
+Chooser.loadClass(u1, "ArcTest");
+//invoke main()
+ArcTest.main(null); 
+
+//Case 2b. u is a remote jar file with a known address
+u2 = new URL("http://mimoza.marmara.edu.tr/~maeyler/time/timeDemo.jar");
+//Case 2b. u is a remote jar file with a known address
+//Load a class in the jar file
+Chooser.loadClass(u2, "time.Clock");
+//make an instance
+ben = Clock.newInstance("Bencil");
+//display the window
+b = Clock.display(ben, "BEN", 300, 0);
+
