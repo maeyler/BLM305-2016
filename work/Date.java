@@ -1,23 +1,26 @@
 enum Month { Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec }
 
-public class Date {
+public class Date implements Comparable<Date> {
 
     static Class M = Month.class;
     int day; Month mon; int year;
+    String str;
     public Date(int d, Month m, int y) {
         day = d; mon = m; year = y;
+        String s = ""+mon.ordinal();
+        if (mon.ordinal() < 10) s = "0"+s;
+        str = year+s+day;
     }
-/** implement these methods
     public int hashCode() {
-        return ;
+        return str.hashCode();
     }
     public boolean equals(Object x) {
-        return ;
+        Date d = (Date)x;
+        return (str == d.str);
     }
     public int compareTo(Date d) {
-        return ;
+        return str.compareTo(d.str);
     }
-**/
     public String toString() { // "Jan 1, 2015"
         return mon+" "+day+", "+year;
     }
