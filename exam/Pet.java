@@ -1,9 +1,19 @@
 enum Food { bread, soup, meat, fruit }
 
-abstract class Pet {
+abstract class Pet implements Comparable<Pet> {
     String name;
     abstract boolean eats(Food f);
     abstract String sound();
+    public int hashCode() {
+        return name.hashCode();
+    }
+    public boolean equals(Object x) {
+        Pet d = (Pet)x;
+        return (name.equals(d.name));
+    }
+    public int compareTo(Pet d) {
+        return name.compareTo(d.name);
+    }
     public void talk() {
         System.out.println(name+": "+sound());
     }
