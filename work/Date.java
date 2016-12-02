@@ -16,7 +16,7 @@ public class Date implements Comparable<Date> {
     }
     public boolean equals(Object x) {
         Date d = (Date)x;
-        return (str == d.str);
+        return (str.equals(d.str));
     }
     public int compareTo(Date d) {
         return str.compareTo(d.str);
