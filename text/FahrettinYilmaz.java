@@ -9,7 +9,7 @@ public class FahrettinYilmaz implements Processor {
         arrWords = input.split("\\p{Space}|\\p{Punct}");
 
         for (String s : arrWords) {
-            if (isTextPalindrome(s)) {
+            if (isTextPalindrome(s)&&s.length()>1) {
                 System.out.println(s);
                 output = output + s + " ";
 counter++;
@@ -20,11 +20,11 @@ counter++;
     }
 
     public String description(String source) {
-        return source + " Found "+counter+" palindrome words.";
+        return source + " found "+counter+" palindrome words.";
     }
 
     public String author() {
-        return "Fahretti Yýlmaz";
+        return "Fahrettin Yýlmaz";
     }
 
     public static boolean isTextPalindrome(String text) {
