@@ -4,7 +4,7 @@ public class AhmetEmreDemirsen implements Processor {
     public String process(String input) {
         String s = "";
         for (int i = 0; i < input.length(); i++) {
-            s = s.concat((int)input.charAt(i)+"");
+            s = s.concat((int)input.charAt(i)+" ");
         }
 	return s;
     }
