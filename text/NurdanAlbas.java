@@ -2,8 +2,7 @@ package text;
 import java.util.StringTokenizer;
 public class NurdanAlbas implements Processor {
     public String process(String input) {
-         String str = "Fatih    Sultan  Mehmet       Vakif            University - Computer                        Engineering";
-        StringTokenizer ayrac = new StringTokenizer(str, " ");
+        StringTokenizer ayrac = new StringTokenizer(input, " ");
         StringBuffer sb = new StringBuffer();
         while(ayrac.hasMoreElements()){
             sb.append(ayrac.nextElement()).append(" ");
@@ -11,7 +10,7 @@ public class NurdanAlbas implements Processor {
        return sb.toString().trim();
     }
     public String description(String source) {
-        return source+" fazla bosluklari atip tek bosluk yapma";
+        return source+" fazla bosluklari atip tek bosluk yapma ";
     }
     public String author() {
         return "Nurdan Albas";
