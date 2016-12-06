@@ -123,8 +123,13 @@ public class Text implements ActionListener {
     void setMessage(Processor q) {
         msg = q; 
         who.setText(q.author()); 
-        txt.setText(q.process(input)); 
-        ref.setText(q.description(source)); 
+        try {
+            txt.setText(q.process(input)); 
+            ref.setText(q.description(source)); 
+        } catch(RuntimeException e) { 
+            txt.setText(e.toString()); 
+            ref.setText(""); 
+        }
     }
     public void setItem(int i) {
         String m = menu.getItemAt(i);
