@@ -1,0 +1,36 @@
+//We need something to draw on
+class javax.swing.JPanel
+//We need something to draw on
+//a new JPanel
+pan = new JPanel();
+//make it visible in a window
+win = Menu.toWindow(pan); 
+//Drag the window to visible area
+win.setBounds(150, 300, 400, 300);
+//get Graphics
+g = pan.getGraphics(); 
+//print some text
+g.drawString("Java graphics is easy", 100, 105);
+//Use blue color
+class java.awt.Color
+//Use blue color
+//no Red, some Green, more Blue
+BLUE = new Color(0.0, 0.35, 0.95);
+//Use blue color
+g.setColor(BLUE);
+//draw a shape
+g.drawRect(81, 61, 160, 80);
+//draw another shape
+g.drawOval(81, 61, 160, 80);
+//Use larger font
+class java.awt.Font
+//Use larger font
+//bold and size=20 
+f = new Font("Serif", 1, 20);
+//Use larger font
+g.setFont(f);
+//print text with larger font in blue
+g.drawString("and powerful", 100, 180);
+//make the shape thicker
+g.drawRect(80, 60, 162, 82);
+
