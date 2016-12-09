@@ -51,8 +51,9 @@ public class ClipWatch {
     
     public ClipWatch() {
       try { //must be within try-catch
-          HTML = new DataFlavor("text/html; class=java.lang.String");
-      } catch (Exception x) {
+          String m = "text/html; document=selection; class=java.lang.String";
+          HTML = new DataFlavor(m);
+      } catch (ClassNotFoundException x) {
       }
       DropTarget dt = new DropTarget(top, ear);
       top.setToolTipText(HERE);
