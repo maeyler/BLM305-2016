@@ -1,0 +1,55 @@
+//String encoding
+class java.lang.String
+//Greek char "mu"
+s1 = String.valueOf({956, 74}); //--> "?J" 
+//First byte is not recognized,
+//it is shown as a quesiton mark
+b1 = s1.getBytes(); //--> byte[2]
+//We can't get back the same String
+//from the byte array
+//(not properly encoded)
+s2 = new String(b1); //--> "?J"
+//Arabic word with 4 chars
+s3 = String.valueOf({1575, 1604, 1604, 1607}); //--> "????"
+//None of them are recognized
+b3 = s3.getBytes(); //--> byte[4]
+//Arabic encoding
+A = new String("Cp1256"); //--> "Cp1256"
+//Get the bytes in Arabic encoding
+//now they are distinct bytes
+b4 = s3.getBytes(A); //--> byte[4]
+//We get back the same String
+//when properly decoded
+s4 = new String(b4, A); //--> "????"
+//Is it the same String?
+s4.equals(s3); //--> true
+//Several char types
+class java.lang.Character
+//a letter, lower case
+Character.getType('a'); //--> 2
+//a digit
+Character.getType('1'); //--> 9
+//a letter, modified C, upper case
+Character.getType('Ç'); //--> 1
+//a letter, modified s, lower case
+//only in Turkish alphabet
+Character.getType(351); //--> 2
+//Greek char "mu", lower case
+Character.getType(956); //--> 2
+//Arabic char "elif"
+Character.getType(1575); //--> 5
+//UnicodeBlock name for the same chars
+class java.lang.Character$UnicodeBlock
+//a letter
+u1 = Character$UnicodeBlock.of('a'); //--> BASIC_LATIN 
+//a digit
+u2 = Character$UnicodeBlock.of('1'); //--> BASIC_LATIN 
+//a letter, modified c
+u3 = Character$UnicodeBlock.of('ç'); //--> LATIN_1_SUPPLEMENT 
+//a letter, modified s
+//only in Turkish alphabet
+u4 = Character$UnicodeBlock.of(351); //--> LATIN_EXTENDED_A 
+//Greek char "mu"
+u5 = Character$UnicodeBlock.of(956); //--> GREEK
+//Arabic char "elif"
+u6 = Character$UnicodeBlock.of(1575); //--> ARABIC
