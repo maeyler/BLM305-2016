@@ -39,15 +39,15 @@ public class GrayConverter {
         //Image i = new ImageIcon(u).getImage();
         return copyOf(javax.imageio.ImageIO.read(u));
     }
-    public static BufferedImage copyOf(BufferedImage bi) {
-        int w = bi.getWidth(), h = bi.getHeight();
+    public static BufferedImage copyOf(java.awt.Image i) {
+        int w = i.getWidth(null), h = i.getHeight(null);
         int MAX = 512; 
         if (w > MAX) {
             h = (int)(h*(float)MAX/w); w = MAX; 
         }
         //make sure i2 has correct type
         BufferedImage i2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        i2.getGraphics().drawImage(bi, 0, 0, w, h, null);
+        i2.getGraphics().drawImage(i, 0, 0, w, h, null);
         return i2;
     }
     public static void convert(BufferedImage bi) {
