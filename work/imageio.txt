@@ -1,0 +1,48 @@
+//a File instance
+class java.io.File
+//a File instance
+//must be JPEG
+f1 = new File("images", "photo.JPG");
+//how many bytes?
+f1.length(); //--> 152693
+//ImageIO utility
+class javax.imageio.ImageIO
+//ImageInputStream iis
+iis = ImageIO.createImageInputStream(f1);
+//ImageInputStream iis
+iis.length(); //--> 152693
+//get readers
+i = ImageIO.getImageReaders(iis);
+//get readers
+i.hasNext(); //--> true
+//first reader
+rdr = i.next();
+//no more
+i.hasNext(); //--> false
+//prepare for reading
+rdr.setInput(iis, true);
+//read Metadata
+md = rdr.getImageMetadata(0);
+//Format Name: javax_imageio_jpeg_image_1.0
+fn = md.getNativeMetadataFormatName();
+//root of the tree
+t0 = md.getAsTree(fn);
+//last child
+t2 = t0.getLastChild();
+//grand child :)
+t3 = t2.getFirstChild();
+//EXIF data
+a = t3.getUserObject(); //--> byte[4092]
+//decode data
+class java.lang.String
+//first 4 bytes
+e = new String(a, 0, 4); //--> "Exif"
+//camera
+s = new String(a, 158, 10); //--> "iPhone 3GS"
+//date taken
+d = new String(a, 192, 19); //--> "2013:08:28 10:21:08"
+//Metadata within sss.jar
+class mae.brow.Metadata
+//Metadata within sss.jar
+MD = new Metadata(f1);
+
