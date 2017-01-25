@@ -12,3 +12,5 @@ Java framework'lerini kullanan küçük bir uygulama geliştirin
 jar dosyasının 100K içinde olmasına dikkat edelim _(do not use external packages)_
 
 * 28 Aralık ders saati: Kişi başına 5 dakikalık sunum
+
+Ödevler güzeldi ama sınavda aynı başarıyı göremedik
