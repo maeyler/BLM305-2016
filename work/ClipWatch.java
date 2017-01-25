@@ -1,21 +1,20 @@
 //Jun 2004 DropOrPaste 
 //Dec 2012 modified for CSE 495
 //Dec 2016 scaled fonts
+//Jan 2017 FlavorListener 
 
 import java.util.List;
 import java.util.Arrays;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.*;
+import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class ClipWatch {
    
+   final Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
    Transferable data; //clipboard contents
    String[] flavors; List lst; String htm, txt; Image img;
    JButton current;   //last pressed
@@ -97,8 +96,10 @@ public class ClipWatch {
       JFrame frm = new JFrame("Drag&Drop -- Copy&Paste");
       frm.setContentPane(pan); 
       frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frm.setBounds(0, scaled(150), scaled(600), scaled(480));
+      frm.setBounds(scaled(100), scaled(100), scaled(600), scaled(480));
       frm.setVisible(true);  
+      frm.addWindowListener(ear);
+      clip.addFlavorListener(ear);
       //frm.pack(); not needed
    }
    public boolean pasteData(Transferable t)  {
@@ -107,7 +108,7 @@ public class ClipWatch {
       //System.out.println(s);
       button.get(0).setText(s); 
       data = t; //save for inspection -- not used
-      flavors = getData(t);
+      flavors = getDataFlavors(t);
       lst = (List)getData(t, LIST);
       htm = (String)getData(t, HTML);
       txt = (String)getData(t, TEXT);
@@ -136,8 +137,10 @@ public class ClipWatch {
    }
    public boolean displayHTML(String s) {
       if (s == null || s.length() == 0) return false;
+      int i = s.toLowerCase().indexOf("<html>");
+      if (i == -1) return false;
       port.setView(html); 
-      html.setText(s);
+      html.setText(s.substring(i));
       selectButton(button.get(2));
       return true;
    }
@@ -174,8 +177,9 @@ public class ClipWatch {
       }
    }
 
-   class Ear implements ActionListener, DropTargetListener {
-     public void drawBox(Color c) {
+   class Ear extends WindowAdapter 
+     implements ActionListener, DropTargetListener, FlavorListener {
+     void drawBox(Color c) {
         Graphics2D g = (Graphics2D)pan.getGraphics();
         g.setColor(c); g.setStroke(THICK);
         Rectangle r = top.getBounds();
@@ -204,13 +208,20 @@ public class ClipWatch {
         else if (b == 3) displayText(txt);
         else if (b == 4) displayPict(img);
      }
+     public void flavorsChanged(FlavorEvent e) {
+        paste.actionPerformed(null);
+        //System.out.println("flavorsChanged");
+     }
+     public void windowClosed(WindowEvent e) {
+        clip.removeFlavorListener(ear); 
+        System.out.printf("Closed");
+     }
    }
    
    class Paste extends AbstractAction {
       public Paste() { super("Paste"); }
       public void actionPerformed(ActionEvent e) {
-         Toolkit tk = Toolkit.getDefaultToolkit();
-         pasteData(tk.getSystemClipboard().getContents(null));
+         pasteData(clip.getContents(null));
       }
    }
 
@@ -224,7 +235,7 @@ public class ClipWatch {
       }
       return null;
    }
-   public static String[] getData(Transferable t) { 
+   public static String[] getDataFlavors(Transferable t) { 
       DataFlavor[] d = t.getTransferDataFlavors();
       String[] a = new String[d.length]; //String s = "";
       for (int i=0; i<a.length; i++) 
