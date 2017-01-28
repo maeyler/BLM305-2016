@@ -13,7 +13,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class ClipWatch {
-   
+
    final Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
    Transferable data; //clipboard contents
    String[] flavors; List lst; String htm, txt; Image img;
@@ -22,7 +22,7 @@ public class ClipWatch {
    final List<JButton> button; // = new ArrayList<JButton>(5); 
    final JPanel pan = new JPanel(new BorderLayout(GAP, GAP));
    final JPanel top = new JPanel();
-   final JList list = new JList();
+   final JList<Object> list = new JList<>();
    final JTextArea text = new JTextArea();
    final JEditorPane html = new JEditorPane();
    final JLabel pict = new JLabel(null, null, JLabel.CENTER);
@@ -30,22 +30,18 @@ public class ClipWatch {
    final Ear ear = new Ear();
    
    public static final int 
-        RESOLUTION = Toolkit.getDefaultToolkit().getScreenResolution();
+       RESOLUTION = Toolkit.getDefaultToolkit().getScreenResolution();
    public static int scaled(int k) { return Math.round(k*RESOLUTION/96f); }
    static final int GAP = scaled(5);
    static final Color 
-    NORMAL = Color.cyan, DROP = Color.blue;
+       NORMAL = Color.cyan, DROP = Color.blue;
    static final Font
-    SANS = new Font("SansSerif", 0, scaled(12)),
-    MONO  = new Font("Monospaced", 0, scaled(12));
+       SANS = new Font("SansSerif", 0, scaled(12)),
+       MONO  = new Font("Monospaced", 0, scaled(12));
    static final BasicStroke THICK = new BasicStroke(2);
-   static final String 
-    ENABLED = "Copy and Drag are enabled",
-    HERE = "Drop or paste here";
    static final DataFlavor PICT = DataFlavor.imageFlavor;
    static final DataFlavor LIST = DataFlavor.javaFileListFlavor;
    static final DataFlavor TEXT = DataFlavor.stringFlavor;
-        //new DataFlavor("text/plain; class=java.lang.String");
    static DataFlavor HTML; //will be assigned below
     
     public ClipWatch() {
@@ -55,17 +51,17 @@ public class ClipWatch {
       } catch (ClassNotFoundException x) {
       }
       DropTarget dt = new DropTarget(top, ear);
-      top.setToolTipText(HERE);
+      top.setToolTipText("Drop or paste here");
       top.add(new JButton(paste)); //first button: Paste is ActionListener
       top.add(javax.swing.Box.createHorizontalStrut(scaled(10)));
       top.add(new JLabel("Data:"));
       JButton clipB = new JButton(); //shows clipboard contents
       top.add(clipB);
       top.add(javax.swing.Box.createHorizontalStrut(scaled(30)));
-      JButton[] ALL = { clipB, //next button is also different
-          new JButton("Files"), new JButton("HTML"), 
+      JButton[] ALL = { clipB, new JButton("Files"), 
+          new JButton("Rich Text"), new JButton("HTML"), 
           new JButton("Text"), new JButton("Image") };
-      button = Arrays.asList(ALL);
+      button = Arrays.asList(ALL); current = clipB; 
       for (JButton b : ALL) {
           if (b != clipB) top.add(b); //clipB is already added
           b.addActionListener(ear);
@@ -75,17 +71,14 @@ public class ClipWatch {
       port = bot.getViewport();
       list.setFont(SANS);
       list.setDragEnabled(true);
-      list.setToolTipText(ENABLED);
       html.setContentType("text/html");
       html.setEditable(false);
       html.setDragEnabled(true);
-      html.setToolTipText(ENABLED);
       text.setFont(MONO);
       text.setLineWrap(true);
       text.setWrapStyleWord(true);
       text.setEditable(false);
       text.setDragEnabled(true);
-      text.setToolTipText(ENABLED);
       
       pan.setBorder(new EmptyBorder(GAP, GAP, GAP, GAP));
       pan.setBackground(NORMAL);
@@ -102,10 +95,16 @@ public class ClipWatch {
       clip.addFlavorListener(ear);
       //frm.pack(); not needed
    }
+   void setToolTips(int i, int n)  {
+      String s = "";
+      if (n > 9999) s = (n/1024)+" Kb";
+      else if (n > 0) s = n+" bytes";
+      button.get(i).setToolTipText(s);
+   }
    public boolean pasteData(Transferable t)  {
       DataFlavor[] a = t.getTransferDataFlavors();
       String s = a.length+" flavors";  //\n";
-      //System.out.println(s);
+      //System.out.println("pasteData "+s);
       button.get(0).setText(s); 
       data = t; //save for inspection -- not used
       flavors = getDataFlavors(t);
@@ -113,7 +112,15 @@ public class ClipWatch {
       htm = (String)getData(t, HTML);
       txt = (String)getData(t, TEXT);
       img = (Image)getData(t, PICT);
-      if (txt == null && htm != null) txt = htm;
+      if (htm == null) {
+          setToolTips(3, 0); setToolTips(4, 0); 
+      } else {
+          if (txt == null) txt = htm;
+          int k = htm.toLowerCase().indexOf("<html"); 
+          if (k >= 0) htm = htm.substring(k); 
+          setToolTips(3, htm.length());
+          setToolTips(4, txt.length());
+      }
       if (displayList(lst)) return true;
       if (displayHTML(htm)) return true;
       if (displayText(txt)) return true;
@@ -122,54 +129,52 @@ public class ClipWatch {
       return false;
    }
    public void displayData(Object[] a) { 
-      //port.setView(text); 
-      //text.setText(flavors); text.select(0,0);
+      if (a == null || a.length == 0) return;
       port.setView(list);
       list.setListData(a);
-      selectButton(button.get(0));
+      selectButton(0);
    }
    public boolean displayList(List a) { 
       if (a == null || a.size() == 0) return false;
       port.setView(list);
       list.setListData(a.toArray());
-      selectButton(button.get(1));
+      selectButton(1);
       return true;
    }
    public boolean displayHTML(String s) {
       if (s == null || s.length() == 0) return false;
-      int i = s.toLowerCase().indexOf("<html>");
-      if (i == -1) return false;
       port.setView(html); 
-      html.setText(s.substring(i));
-      selectButton(button.get(2));
+      html.setText(s);
+      selectButton(2);
       return true;
    }
    public boolean displayText(String s) { 
       if (s == null || s.length() == 0) return false;
       port.setView(text); 
       text.setText(s); text.select(0,0);
-      selectButton(button.get(3));
+      selectButton(4);
       return true;
    }
-   public boolean displayPict(Image i) {
-      if (i == null) return false;
+   public boolean displayPict(Image im) {
+      if (im == null) return false;
       port.setView(pict); 
       pict.setText(null); 
-      pict.setIcon(new ImageIcon(i));
-      selectButton(button.get(4));
+      pict.setIcon(new ImageIcon(im));
+      selectButton(5);
       return true;
    }
    void displayString(String s) { 
       port.setView(pict);
       pict.setIcon(null);
       pict.setText(s);
-      selectButton(null); 
+      selectButton(-1); 
    }
-   void selectButton(JButton b) { 
-      current = b; checkButtons();
+   void selectButton(int i) { 
+      current = (i<0? null : button.get(i)); 
+      checkButtons();
    }
    void checkButtons() {
-      Object[] a = { this, lst, htm, txt, img };
+      Object[] a = { this, lst, htm, htm, txt, img };
       for (int i=0; i<a.length; i++)  {
           JButton b = button.get(i);
           b.setBackground(b == current? NORMAL : null); 
@@ -177,8 +182,8 @@ public class ClipWatch {
       }
    }
 
-   class Ear extends WindowAdapter 
-     implements ActionListener, DropTargetListener, FlavorListener {
+   class Ear extends WindowAdapter implements ActionListener, 
+         DropTargetListener, FlavorListener, ClipboardOwner {
      void drawBox(Color c) {
         Graphics2D g = (Graphics2D)pan.getGraphics();
         g.setColor(c); g.setStroke(THICK);
@@ -205,23 +210,32 @@ public class ClipWatch {
         if (b == 0) displayData(flavors);
         else if (b == 1) displayList(lst);
         else if (b == 2) displayHTML(htm);
-        else if (b == 3) displayText(txt);
-        else if (b == 4) displayPict(img);
-     }
-     public void flavorsChanged(FlavorEvent e) {
-        paste.actionPerformed(null);
-        //System.out.println("flavorsChanged");
+        else if (b == 3) displayText(htm);
+        else if (b == 4) displayText(txt);
+        else if (b == 5) displayPict(img);
      }
      public void windowClosed(WindowEvent e) {
+        System.out.println("windowClosed");
         clip.removeFlavorListener(ear); 
-        System.out.printf("Closed");
+     }
+     public void flavorsChanged(FlavorEvent e) {
+        //System.out.println("flavorsChanged");
+        paste.actionPerformed(null);
+     }
+     public void lostOwnership(Clipboard cb, Transferable t) {
+        //System.out.println("lostOwnership ");
      }
    }
    
    class Paste extends AbstractAction {
       public Paste() { super("Paste"); }
       public void actionPerformed(ActionEvent e) {
-         pasteData(clip.getContents(null));
+         Transferable t = clip.getContents(null);
+         if (data != null && data != t) {
+             clip.setContents(t, ear);
+             //System.out.print("Change Owner ");
+         }
+         pasteData(t);
       }
    }
 
